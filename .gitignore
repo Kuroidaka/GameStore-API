@@ -1,0 +1,10 @@
+# ignore log files
+*.log
+
+# ignore build artifacts
+dist/
+node_modules/
+
+# ignore configuration files
+config.js
+.env

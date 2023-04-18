@@ -7,11 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/idaka123/GameStoreApi.git"
-  },
-  "author": "",
+  "repository": "git+https://github.com/idaka123/GameStoreApi.git",
+  "author": "Canh <pcanhgm@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/idaka123/GameStoreApi/issues"

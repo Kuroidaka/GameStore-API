@@ -23,8 +23,8 @@ routes(app)
 
 app.get('/', async (req, res) => {
     try {
-        // const [rows, fields] = await DB.query('SELECT * FROM Product');
-        res.send("hello")
+        const [rows, fields] = await DB.query('SELECT * FROM Games');
+        res.json(rows);
       } catch (err) {
         console.error(err);
         res.status(500).send('Internal server error');

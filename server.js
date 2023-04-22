@@ -4,6 +4,8 @@ const cors = require("cors")
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const morgan = require('morgan')
+const DB = require('./config/database')
+const routes = require('./routes/index')
 
 const app = express()
 
@@ -17,8 +19,16 @@ app.use(cookieParser())
 app.use(morgan('dev'))
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send("hello dawworald")
+routes(app)
+
+app.get('/', async (req, res) => {
+    try {
+        // const [rows, fields] = await DB.query('SELECT * FROM Product');
+        res.send("hello")
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal server error');
+      }
 })
 
 const port = process.env.SEVER_PORT

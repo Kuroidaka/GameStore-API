@@ -1,6 +1,7 @@
+const test = require('./test.route')
 
 function routes (app) {
-    app.use('/api/v1',)
+    app.use('/', test)
 }
 
 module.exports = routes

@@ -1,6 +1,5 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
-
-
 const DB = mysql.createPool({
     host: process.env.DATABASE_ID,
     user: process.env.DATABASE_USERNAME,
@@ -14,7 +13,6 @@ const DB = mysql.createPool({
     queueLimit: 0,
 
   });
-
 
 
 DB.on('connection', function (connection) {

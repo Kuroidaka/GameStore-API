@@ -15,10 +15,12 @@
   },
   "homepage": "https://github.com/idaka123/GameStoreApi#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.2.3",
     "nodemon": "^2.0.22"

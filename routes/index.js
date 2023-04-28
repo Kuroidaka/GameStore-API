@@ -1,7 +1,7 @@
-const test = require('./test.route')
+const game = require('./game.route')
 
 function routes (app) {
-    app.use('/', test)
+    app.use('/game', game)
 }
 
 module.exports = routes

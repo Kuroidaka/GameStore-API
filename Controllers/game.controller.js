@@ -24,9 +24,11 @@ const game = {
         }
     },
     getGameList: async (req, res) => {
-        const query = "SELECT * FROM Games";
+        const param = Number(req.query.limit)
+        //if there limit the query will be "Select * from Games limit ?" else the query will be "SELECT * FROM Games"
+        const query =param ?"Select * from Games limit ?": "SELECT * FROM Games";
         try {
-            const result = await DB.query(query);
+            const result = await DB.query(query,param);
             console.log(result);
             return res.status(200).json(result[0]);
         } catch (err) {
@@ -38,6 +40,17 @@ const game = {
         const query = "SELECT * FROM Games WHERE id = ?";
         try {
             const result = await DB.query(query, req.query.id);
+            return res.status(200).json(result[0]);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Server Error' });
+        }
+    },
+    getGameByName: async (req, res) => {
+        const name = req.query.name
+        const query = "SELECT * FROM Games WHERE game_name = ?";
+        try {
+            const result = await DB.query(query,name);
             return res.status(200).json(result[0]);
         } catch (err) {
             console.error(err);

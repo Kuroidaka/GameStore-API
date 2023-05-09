@@ -56,6 +56,17 @@ const game = {
             console.error(err);
             return res.status(500).json({ message: 'Server Error' });
         }
+    },
+    deletegame: async (req, res) => {
+        const param = Number(req.query.id);
+        const query = "DELETE FROM Games WHERE id=?";
+        try {  
+            const result = await DB.query(query, param);
+            return res.status(200).json({ message: 'Delete successfully' });
+        } catch (error) {
+            console.error(err);
+            return res.status(500).json({ message: 'Server Error' });
+        }
     }
 }
 

@@ -67,6 +67,27 @@ const game = {
             console.error(err);
             return res.status(500).json({ message: 'Server Error' });
         }
+    },
+    editgame: async (req, res) => {
+        const json = req.body
+        const id = req.query.id
+        const key = Object.keys(json)
+        var param = ``
+        for (let i = 0; i < key.length; i++) {
+            if (key[i] != 'id') {
+                param = param + `${key[i]}=` + `"${json[key[i]]}"`
+                if (i < key.length - 1) {
+                    param += ', '
+                }
+            }
+        }
+        const query = `update Games set ${param} where id=${id}`
+        try {
+            const result = await DB.query(query)
+            return res.status(200).json({ message: 'successful update' })
+        } catch (error) {
+            console.error(error)
+        }
     }
 }
 

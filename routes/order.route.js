@@ -7,6 +7,7 @@ const router = express.Router()
 
 router.post('/book', verifyToken, order.booking)
 router.post('/accept', verifyToken, verifyAdmin, order.accept)
+router.post('/reject', verifyToken, verifyAdmin, order.reject)
 
 
 module.exports = router

@@ -1,5 +1,6 @@
-const DB = require('../config/database');
-const { checkout } = require('../routes/game.route');
+const DB = require('../config/database')
+
+
 const game = { 
     insertGame: async (req, res) => { 
 

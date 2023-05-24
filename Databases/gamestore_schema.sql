@@ -4,7 +4,8 @@ USE GAMESTORE;
 CREATE TABLE Users (
 	id INT UNIQUE PRIMARY KEY AUTO_INCREMENT,
 	username VARCHAR(50) UNIQUE NOT NULL,
-	password VARCHAR(50) NOT NULL,
+	display_name VARCHAR(50),
+	password VARCHAR(300) NOT NULL,
 	email VARCHAR(100) UNIQUE,
 	phone VARCHAR(20),
 	total_points INT DEFAULT 0,
@@ -16,7 +17,7 @@ CREATE TABLE Admins (
 	id INT UNIQUE PRIMARY KEY AUTO_INCREMENT ,
 	username VARCHAR(50) UNIQUE NOT NULL,
 	password VARCHAR(300) NOT NULL,
-	email VARCHAR(100) NOT NULL
+	email VARCHAR(100) NOT NULL,
 );
 
 CREATE TABLE Games (
@@ -37,22 +38,41 @@ CREATE TABLE Games (
 
 
 CREATE TABLE QueueBookings (
-	id INT PRIMARY KEY,
-	customer_id INT NOT NULL,
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	customer_id INT,
+	admin_id INT,
 	book_date DATE NOT NULL,
 	queue_status ENUM('WAITING', 'DONE', 'DECLINE') DEFAULT 'WAITING',
 	discount_applied DECIMAL(3,2) DEFAULT 0.00,
-	FOREIGN KEY (customer_id) REFERENCES Users(id)
+	queue_data TEXT,
+	rent_duration INT NOT NULL
+	-- FOREIGN KEY (customer_id) REFERENCES Users(id),
+	-- FOREIGN KEY (admin_id) REFERENCES Admins(id)
+);
+
+CREATE TABLE BookingItems (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT,
+    game_id INT UNSIGNED NOT NULL,
+  	price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+	discount_value DECIMAL(3,2) DEFAULT 0.00
+
+	-- FOREIGN KEY (order_id) REFERENCES QueueBookings(id),
+	-- FOREIGN KEY (game_id) REFERENCES Games(id)
 );
 
 CREATE TABLE Rentals (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	customer_id INT NOT NULL,
-	game_id INT UNSIGNED NOT NULL,
+	-- customer_id INT NOT NULL,
+	admin_id INT NOT NULL,
 	rental_start_date DATE NOT NULL,
+	queue_booking_id INT,
 	rental_end_date DATE NOT NULL,
-	FOREIGN KEY (customer_id) REFERENCES Users(id),
-	FOREIGN KEY (game_id) REFERENCES Games(id)
+	discount_applied DECIMAL(3,2) DEFAULT 0.00,
+	rental_price DECIMAL(6,2) NOT NULL
+	-- FOREIGN KEY (customer_id) REFERENCES Users(id),
+	-- FOREIGN KEY (admin_id) REFERENCES Admins(id),
+	-- FOREIGN KEY (game_id) REFERENCES Games(id)
 );
 
 CREATE TABLE RentalItems (
@@ -60,6 +80,7 @@ CREATE TABLE RentalItems (
 	game_id INT UNSIGNED NOT NULL,
 	rental_start_date DATE NOT NULL,
 	rental_end_date DATE NOT NULL,
+	price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
 	PRIMARY KEY (rental_id, game_id),
 	FOREIGN KEY (rental_id) REFERENCES Rentals(id),
 	FOREIGN KEY (game_id) REFERENCES Games(id)
@@ -102,15 +123,7 @@ CREATE TABLE Orders (
 	FOREIGN KEY (customer_id) REFERENCES Users(id)
 );
 
-CREATE TABLE OrderItems (
-	order_id INT UNSIGNED NOT NULL,
-	game_id INT UNSIGNED NOT NULL,
-	quantity INT NOT NULL DEFAULT 1,
-	price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    PRIMARY KEY (order_id, game_id),
-	FOREIGN KEY (order_id) REFERENCES Orders(id),
-	FOREIGN KEY (game_id) REFERENCES Games(id)
-);
+
 
 CREATE TABLE PaymentMethods (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

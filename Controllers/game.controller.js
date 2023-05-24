@@ -1,4 +1,5 @@
 const DB = require('../config/database')
+
 const game = { 
     insertGame: async (req, res) => { 
 

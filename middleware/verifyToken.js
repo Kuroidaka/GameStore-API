@@ -10,7 +10,7 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, 'your-secret-key');
-    console.log("decoded",decoded);
+    console.log("decoded", decoded);
     req.user = decoded;
     next();
   } catch (err) {
@@ -19,3 +19,4 @@ const verifyToken = (req, res, next) => {
 };
 
 module.exports = verifyToken;
+

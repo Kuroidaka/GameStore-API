@@ -46,7 +46,7 @@ const auth = {
         }
     
         // generate a JSON web token for the user
-        const token = jwt.sign({ username: result[0].username }, 'your-secret-key', { expiresIn: '1h' });
+        const token = jwt.sign({ username: result[0].username, id: result[0].id }, 'your-secret-key', { expiresIn: '1h' });
         return res.status(200).json({ token });
       
       } catch (error) {

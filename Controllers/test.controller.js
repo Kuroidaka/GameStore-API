@@ -1,6 +1,6 @@
 // const DB = require('C:/Users/USER/GameStore-API/config/database.js')
 // const test = { 
-//     log: async (req, res) => {
+//     log: async (`req`, res) => {
         
 //         return res.json('hello')
 //     }

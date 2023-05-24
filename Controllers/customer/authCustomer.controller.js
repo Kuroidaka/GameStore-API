@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const DB = require('../config/database');
+const DB = require('../../config/database');
 
 
 const auth = {
@@ -8,8 +8,8 @@ const auth = {
       const { username, email, password } = req.body;
       try {
         // check if user already exists
-        const [existingUser] = await DB.query('SELECT * FROM Admins WHERE username = ?', [username]);
-        console.log("existingUser",existingUser);
+        const [existingUser] = await DB.query(`SELECT * FROM ${process.env.DATABASE_NAME}.Users WHERE username = ?`, [username]);
+        console.log("existingUser", existingUser);
         if (existingUser.length > 0) {
           return res.status(404).json({msg : 'User already exists'});
         }
@@ -18,7 +18,7 @@ const auth = {
         const hashedPassword = await bcrypt.hash(password, 10);
     
         // insert the new user into the database
-        const [newUser] = await DB.query('INSERT INTO Admins (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
+        const [newUser] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.Users (username, email, password) VALUES (?, ?, ?)`, [username, email, hashedPassword]);
     
         // generate a JSON web token for the new user
         const token = jwt.sign({ id: newUser.insertId, username, email }, 'your-secret-key', { expiresIn: '1h' });
@@ -32,7 +32,7 @@ const auth = {
       const { username, password } = req.body;
 
       try {
-        const [result] = await DB.query('SELECT * FROM Admins WHERE username = ?', username) 
+        const [result] = await DB.query(`SELECT * FROM ${process.env.DATABASE_NAME}.Users WHERE username = ?`, username) 
 
         // check if the user exists and their password is correct
         if (result.length === 0 ) {
@@ -62,7 +62,7 @@ const auth = {
 
       try {
           // Fetch the current password hash from the database
-        const getCurrentPdQuery = `SELECT password FROM ${process.env.DATABASE_NAME}.Admins WHERE id = ?`
+        const getCurrentPdQuery = `SELECT password FROM ${process.env.DATABASE_NAME}.Users WHERE id = ?`
         const getCurrentPdData = [userId]
         const [result] = await DB.query(getCurrentPdQuery, getCurrentPdData)
 
@@ -83,7 +83,7 @@ const auth = {
         const newPasswordHash = await bcrypt.hash(newPassword, 10)
 
           // Update the password in the database
-        await DB.query(`UPDATE ${process.env.DATABASE_NAME}.Admins SET password = ? WHERE id = ?`, [newPasswordHash, userId])
+        await DB.query(`UPDATE ${process.env.DATABASE_NAME}.Users SET password = ? WHERE id = ?`, [newPasswordHash, userId])
 
         return res.status(200).json({ message: 'Password updated successfully' });
       }

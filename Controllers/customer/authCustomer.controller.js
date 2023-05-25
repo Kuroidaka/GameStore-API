@@ -8,8 +8,14 @@ const auth = {
       const { username, email, password } = req.body;
       try {
         // check if user already exists
-        const [existingUser] = await DB.query(`SELECT * FROM ${process.env.DATABASE_NAME}.Users WHERE username = ?`, [username]);
-        console.log("existingUser", existingUser);
+        const [existingUser] = await DB.query(
+          `
+          SELECT * 
+          FROM ${process.env.DATABASE_NAME}.Users 
+          WHERE username = ?
+          OR email = ?`, 
+          [username, email]);
+          
         if (existingUser.length > 0) {
           return res.status(404).json({msg : 'User already exists'});
         }
@@ -21,11 +27,12 @@ const auth = {
         const [newUser] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.Users (username, email, password) VALUES (?, ?, ?)`, [username, email, hashedPassword]);
     
         // generate a JSON web token for the new user
+        console.log("newUser.insertId", newUser.insertId);
         const token = jwt.sign({ id: newUser.insertId, username, email }, 'your-secret-key', { expiresIn: '1h' });
         res.status(200).json({ token });
       } catch (error) {
         console.error('Error signing up: ', error);
-        res.status(500).send('Error signing up');
+        res.status(500).json('Error signing up');
       }
     },
     login : async (req, res) => {

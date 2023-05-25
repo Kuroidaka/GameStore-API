@@ -8,6 +8,7 @@ CREATE TABLE Users (
 	password VARCHAR(300) NOT NULL,
 	email VARCHAR(100) UNIQUE,
 	phone VARCHAR(20),
+	address VARCHAR(100),
 	total_points INT DEFAULT 0,
 	subscription_status BOOLEAN DEFAULT false
 );
@@ -75,17 +76,6 @@ CREATE TABLE Rentals (
 	-- FOREIGN KEY (game_id) REFERENCES Games(id)
 );
 
-CREATE TABLE RentalItems (
-	rental_id INT UNSIGNED NOT NULL,
-	game_id INT UNSIGNED NOT NULL,
-	rental_start_date DATE NOT NULL,
-	rental_end_date DATE NOT NULL,
-	price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-	PRIMARY KEY (rental_id, game_id),
-	FOREIGN KEY (rental_id) REFERENCES Rentals(id),
-	FOREIGN KEY (game_id) REFERENCES Games(id)
-);
-
 CREATE TABLE Reviews (
 	id INT PRIMARY KEY,
 	customer_id INT NOT NULL,
@@ -106,12 +96,22 @@ CREATE TABLE Discounts (
 );
 
 CREATE TABLE Wishlists (
-	id INT PRIMARY KEY,
+	id INT PRIMARY KEY AUTO_INCREMENT,
 	customer_id INT NOT NULL,
-	game_id INT UNSIGNED NOT NULL,
-	date_added DATE NOT NULL,
-	FOREIGN KEY (customer_id) REFERENCES Users(id),
-	FOREIGN KEY (game_id) REFERENCES Games(id)
+	date_added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+	-- FOREIGN KEY (customer_id) REFERENCES Users(id),
+);
+
+CREATE TABLE WishItems (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    wishlist_id INT NOT NULL,
+    game_id INT UNSIGNED NOT NULL,
+	added_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+   
+    -- FOREIGN KEY (wishlist_id) REFERENCES Wishlists(id),
+    -- FOREIGN KEY (game_id) REFERENCES Games(id)
+	
 );
 
 CREATE TABLE Orders (

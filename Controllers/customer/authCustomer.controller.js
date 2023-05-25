@@ -1,7 +1,7 @@
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const DB = require('../../config/database');
-
 
 const auth = {
     signUp: async (req, res) => {

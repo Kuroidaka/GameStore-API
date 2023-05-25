@@ -117,18 +117,6 @@ const game = {
                         return ` ${key} = '${json[key]}' `
                     }
                 }).join(', ');
-    
-                // for (let i = 0; i < key.length; i++) {
-                //     if (key[i] != 'id') {
-                //         param = param + `${key[i]}=` + `"${json[key[i]]}"`
-                //         console.log(param);
-                //         if (i < key.length - 1) {
-                //             param += ', '
-                //         }
-                //     }
-                // }
-                
-                
 
                 // update game
                 const query = `update Games set ${queryUpdate} where id=${id}`

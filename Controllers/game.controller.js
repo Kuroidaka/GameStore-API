@@ -51,7 +51,7 @@ const game = {
     },
     getGameByName: async (req, res) => {
         const name = req.query.name
-        const query = "SELECT * FROM Games WHERE game_name = ?";
+        const query = `SELECT * FROM Games WHERE game_name LIKE '%${name}%'`;
         try {
             const result = await DB.query(query,name);
             return res.status(200).json(result[0]);

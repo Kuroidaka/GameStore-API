@@ -43,10 +43,13 @@ CREATE TABLE QueueBookings (
 	customer_id INT,
 	admin_id INT,
 	book_date DATE NOT NULL,
+	rental_end_date DATE,
+	rental_start_date DATE,
 	queue_status ENUM('WAITING', 'DONE', 'DECLINE') DEFAULT 'WAITING',
 	discount_applied DECIMAL(3,2) DEFAULT 0.00,
-	queue_data TEXT,
+	address VARCHAR(100),
 	rent_duration INT NOT NULL
+	rental_price DECIMAL(6,2) NOT NULL
 	-- FOREIGN KEY (customer_id) REFERENCES Users(id),
 	-- FOREIGN KEY (admin_id) REFERENCES Admins(id)
 );
@@ -59,20 +62,6 @@ CREATE TABLE BookingItems (
 	discount_value DECIMAL(3,2) DEFAULT 0.00
 
 	-- FOREIGN KEY (order_id) REFERENCES QueueBookings(id),
-	-- FOREIGN KEY (game_id) REFERENCES Games(id)
-);
-
-CREATE TABLE Rentals (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	-- customer_id INT NOT NULL,
-	admin_id INT NOT NULL,
-	rental_start_date DATE NOT NULL,
-	queue_booking_id INT,
-	rental_end_date DATE NOT NULL,
-	discount_applied DECIMAL(3,2) DEFAULT 0.00,
-	rental_price DECIMAL(6,2) NOT NULL
-	-- FOREIGN KEY (customer_id) REFERENCES Users(id),
-	-- FOREIGN KEY (admin_id) REFERENCES Admins(id),
 	-- FOREIGN KEY (game_id) REFERENCES Games(id)
 );
 
@@ -113,17 +102,6 @@ CREATE TABLE WishItems (
     -- FOREIGN KEY (game_id) REFERENCES Games(id)
 	
 );
-
-CREATE TABLE Orders (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	customer_id INT NOT NULL,
-	order_date DATE NOT NULL,
-	order_status ENUM('PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED') DEFAULT 'PROCESSING',
-	total_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-	FOREIGN KEY (customer_id) REFERENCES Users(id)
-);
-
-
 
 CREATE TABLE PaymentMethods (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

@@ -8,6 +8,9 @@ const router = express.Router()
 router.post('/book', verifyToken, order.booking)
 router.post('/accept', verifyToken, verifyAdmin, order.accept)
 router.post('/reject', verifyToken, verifyAdmin, order.reject)
+router.get('/get', order.getListOrder)
+router.get('/get-order-detail', order.getOrderDetail)
+router.post('/edit-order-detail', verifyToken, verifyAdmin, order.editOrder)
 
 
 module.exports = router

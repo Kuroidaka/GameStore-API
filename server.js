@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const DB = require('./config/database')
 const routes = require('./routes/index')
 
+
 const app = express()
 
 app.use(
@@ -21,15 +22,15 @@ app.use(express.json())
 
 routes(app)
 
-app.get('/', async (req, res) => {
-    try {
-        const [rows, fields] = await DB.query('SELECT * FROM Games');
-        res.json(rows);
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal server error');
-      }
-})
+// app.get('/', async (req, res) => {
+//     try {
+//         const [rows, fields] = await DB.query('SELECT * FROM Games');
+//         res.json(rows);
+//       } catch (err) {
+//         console.error(err);
+//         res.status(500).send('Internal server error');
+//       }
+// })
 
 const port = process.env.SEVER_PORT
 app.listen(port, () => {

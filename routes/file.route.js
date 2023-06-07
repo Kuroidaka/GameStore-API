@@ -19,7 +19,7 @@ const upload = multer({
 });
 
 
-router.post('/image/upload', upload.single('image'), image.upload)
+router.post('/upload', upload.array('images'), image.upload);
 router.get('/image/:imageName', image.get)
 router.delete('/image/:imageName', image.delete)
 router.delete('/images', image.deleteAll)

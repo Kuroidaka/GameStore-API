@@ -103,24 +103,31 @@ CREATE TABLE WishItems (
 	
 );
 
-CREATE TABLE PaymentMethods (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	customer_id INT NOT NULL,
-	payment_type ENUM('CREDIT CARD', 'DEBIT CARD', 'PAYPAL', 'OTHER') NOT NULL,
-	card_number VARCHAR(20),
-	cardholder_name VARCHAR(50),
-	expiration_date DATE,
-	FOREIGN KEY (customer_id) REFERENCES Users(id)
-);
+CREATE TABLE images (
+  id int NOT NULL AUTO_INCREMENT,
+  filepath varchar(255) NOT NULL,
+  PRIMARY KEY (id)
+)
 
-CREATE TABLE OrderPayments (
-	order_id INT UNSIGNED NOT NULL,
-	payment_method_id INT UNSIGNED NOT NULL,
-	payment_status ENUM('PENDING', 'PAID', 'FAILED') DEFAULT 'PENDING',
-	payment_date DATE,
-    PRIMARY KEY(order_id, payment_method_id),
-	FOREIGN KEY (order_id) REFERENCES Orders(id),
-	FOREIGN KEY (payment_method_id) REFERENCES PaymentMethods(id)
-);
+
+-- CREATE TABLE PaymentMethods (
+-- 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+-- 	customer_id INT NOT NULL,
+-- 	payment_type ENUM('CREDIT CARD', 'DEBIT CARD', 'PAYPAL', 'OTHER') NOT NULL,
+-- 	card_number VARCHAR(20),
+-- 	cardholder_name VARCHAR(50),
+-- 	expiration_date DATE,
+-- 	FOREIGN KEY (customer_id) REFERENCES Users(id)
+-- );
+
+-- CREATE TABLE OrderPayments (
+-- 	order_id INT UNSIGNED NOT NULL,
+-- 	payment_method_id INT UNSIGNED NOT NULL,
+-- 	payment_status ENUM('PENDING', 'PAID', 'FAILED') DEFAULT 'PENDING',
+-- 	payment_date DATE,
+--     PRIMARY KEY(order_id, payment_method_id),
+-- 	FOREIGN KEY (order_id) REFERENCES Orders(id),
+-- 	FOREIGN KEY (payment_method_id) REFERENCES PaymentMethods(id)
+-- );
 
 

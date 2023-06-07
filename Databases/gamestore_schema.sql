@@ -109,6 +109,12 @@ CREATE TABLE images (
   PRIMARY KEY (id)
 )
 
+CREATE TABLE FileLink (
+	id int NOT NULL AUTO_INCREMENT,
+	fileID varchar(255) NOT NULL,
+	gameID int NOT NULL
+)
+
 
 -- CREATE TABLE PaymentMethods (
 -- 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

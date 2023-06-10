@@ -10,15 +10,15 @@ const routes = require('./routes/index')
 
 const app = express()
 
-app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    }),
-);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors()) 
 app.use(cookieParser())
 app.use(morgan('dev'))
 app.use(express.json())
+
+
 
 routes(app)
 

@@ -7,7 +7,7 @@ const mime = require('mime-types');
 const image = {
   upload: async (req, res) => {
     const files = req.files; // Retrieve the array of uploaded files
-    const imageIds = req.body.imageIds; // Retrieve the array of image IDs from the form
+
 
     let connection;
 
@@ -22,11 +22,10 @@ const image = {
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const imageId = imageIds[i];
 
         const result = await connection.query(
-          'UPDATE images SET filepath = ? WHERE id = ?',
-          [file.path, imageId]
+          `INSERT INTO Images (filepath) VALUES (?)`,
+          [file.path]
         );
 
         if (result[0].affectedRows !== 1) {

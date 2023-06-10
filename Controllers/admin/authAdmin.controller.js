@@ -6,12 +6,18 @@ const DB = require('../../config/database');
 const auth = {
     signUp: async (req, res) => {
       const { username, email, password } = req.body;
+      
       try {
         // check if user already exists
         const [existingUser] = await DB.query('SELECT * FROM Admins WHERE username = ?', [username]);
         console.log("existingUser",existingUser);
         if (existingUser.length > 0) {
           return res.status(404).json({msg : 'User already exists'});
+        }
+
+        // check if password is provided
+        if (!password) {
+          return res.status(400).json({msg : 'Password is required'});
         }
     
         // hash the password using bcrypt
@@ -98,4 +104,3 @@ const auth = {
 
 
 module.exports = auth;
-

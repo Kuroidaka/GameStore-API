@@ -64,9 +64,23 @@ const game = {
         //if there limit the query will be "Select * from Games limit ?" else the query will be "SELECT * FROM Games"
         const query =param ?"Select * from Games limit ?": "SELECT * FROM Games";
         try {
-            const result = await DB.query(query,param);
+            const [result] = await DB.query(query,param);
             console.log(result);
-            return res.status(200).json(result[0]);
+
+            for(let i = 0 ; i < result.length; i++) {
+                const [imageList] = await DB.query(`
+                    SELECT
+                    img.filepath AS filepath
+                    FROM Games c
+                    LEFT JOIN FileLink fl ON fl.gameID = c.id
+                    LEFT JOIN images img ON img.id = fl.fileID
+                    where c.id = ${result[i].id}`
+                );
+
+                result[i].imageList = imageList;
+            }
+
+            return res.status(200).json(result);
         } catch (err) {
             console.error(err);
             return res.status(500).json({ msg: 'Server Error' });

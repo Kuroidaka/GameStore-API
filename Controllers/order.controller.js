@@ -165,19 +165,18 @@ const order = {
         const query = `
         SELECT
         a.id,
-        b.username,
+        c.username,
+        c.id as customerID,
+        c.display_name,
         a.book_date,
         a.rental_start_date,
         a.rental_end_date,
         a.queue_status,
         a.discount_applied,
         a.rental_price,
-        c.address,
-        c.display_name,
+        a.address,
         c.phone
         FROM QueueBookings a
-        LEFT JOIN Admins b
-        ON a.admin_id = b.id
         LEFT JOIN Users c
         ON c.id = a.customer_id
         `;
@@ -263,7 +262,7 @@ const order = {
       }
     },
     editOrder: async (req, res) => {
-      const json = req.body
+      const json = req.body.order
 
       const { queue_status } = req.query
 
@@ -280,13 +279,17 @@ const order = {
           return `${key} = '${json[key]}'`
         }).join(', ')
 
-        // console.log("queryUpdate", queryUpdate)
+        console.log(queryUpdate)
         if(queryUpdate) {
           const query = `UPDATE QueueBookings SET 
           ${queryUpdate}
           WHERE id = ${orderId}`;
   
           await connection.query(query);
+        }
+
+        if(req.body.customer.phone) {
+          await connection.query("UPDATE Users SET phone = ? WHERE id = ?", [req.body.customer.phone, req.body.customer.customerID])
         }
 
         await connection.commit();

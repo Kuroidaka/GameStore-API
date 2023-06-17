@@ -98,6 +98,12 @@ const auth = {
         return res.status(500).json({ error: 'Server error' });
       
       }
+    },
+    checkToken : async (req, res) => {
+      const decode = req.user 
+      if(decode) {
+        return res.status(200).json({ valid: true, msg: "Token is valid" })
+      }
     }
 }
 

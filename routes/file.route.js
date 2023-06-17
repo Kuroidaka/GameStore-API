@@ -3,6 +3,7 @@ const router = express.Router()
 const image = require('../controllers/file/image.controller')
 const storage = require('../middleware/fileStorage')
 const multer = require('multer');
+const game = require('../Controllers/game.controller');
 
 const upload = multer({
     storage: storage,
@@ -20,6 +21,7 @@ const upload = multer({
 
 
 router.post('/image/upload', upload.array('images', 10), image.upload);
+router.post('/image/game',  upload.array('images', 10), game.uploadGameFile)
 router.get('/image/:imageName', image.get)
 router.delete('/image/:imageName', image.delete)
 router.delete('/images', image.deleteAll)

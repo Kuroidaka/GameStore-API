@@ -2,15 +2,16 @@ const DB = require('../config/database');
 
 const order = { 
     booking: async (req, res) => {
-        const { id } = req.user;
-        const { rent_duration, gameList, discount_applied, address } = req.body;
+        // const { id } = req.user;
+        console.log(req.body)
+        const { rent_duration, gameList, discount_applied, address, customerID } = req.body;
         let total_price = 0 
 
         const queryQueueOrder = `
-          INSERT INTO QueueBookings (admin_id, book_date, rent_duration, discount_applied, queue_status, address) 
+          INSERT INTO QueueBookings (customer_id, book_date, rent_duration, discount_applied, queue_status, address) 
           VALUES (?, ?, ?, ?, ?, ?);
         `;
-        const valueQueueOrder = [id, new Date(), rent_duration, discount_applied, 'WAITING', address];
+        const valueQueueOrder = [customerID, new Date(), rent_duration, discount_applied, 'WAITING', address];
       
         let connection; // Declare a connection variable
       
@@ -25,9 +26,8 @@ const order = {
           const { insertId: bookingID } = result[0];
       
           for (let i = 0; i < gameList.length; i++) {
-            const { id: gameID, price } = gameList[i];
+            const gameID = gameList[i];
 
-            total_price += price;
             const queryQueueOrderItem = `
             INSERT INTO BookingItems (game_id, booking_id, price)
             VALUES (${gameID}, ${bookingID}, (SELECT price FROM Games WHERE id = ${gameID}));
@@ -41,7 +41,7 @@ const order = {
 
           // INSERT FINAL PRICE 
     
-          const finalPrice = getTotal[0].total_price * discount_applied
+          const finalPrice = discount_applied ? getTotal[0].total_price * discount_applied : getTotal[0].total_price
       
           const queryInsert = `UPDATE QueueBookings SET rental_price = (${finalPrice}) WHERE id = ${bookingID}`;
 
@@ -84,7 +84,7 @@ const order = {
         const valueQuerySearchOrder = [orderId];
         const [[queueData]] = await connection.query(querySearchOrder, valueQuerySearchOrder);
     
-        // Insert into rental table
+        // update rental status
         const bookDate = queueData.book_date;
         const rentalEndDate = new Date(bookDate.setDate(bookDate.getDate() + queueData.rent_duration));
         
@@ -98,7 +98,7 @@ const order = {
         
         // Commit the transaction
         await connection.commit();
-    
+
         // return res.status(200).json({ msg: 'Order Accepted' });
       } catch (error) {
         console.log(error);
@@ -172,7 +172,9 @@ const order = {
         a.queue_status,
         a.discount_applied,
         a.rental_price,
-        c.address
+        c.address,
+        c.display_name,
+        c.phone
         FROM QueueBookings a
         LEFT JOIN Admins b
         ON a.admin_id = b.id
@@ -207,27 +209,40 @@ const order = {
         connection = await DB.getConnection();
 
         const query = `
-        SELECT 
-          b.game_id,
-          c.game_name,
-          c.developer,
-          c.price,
-          a.book_date,
-          a.rental_start_date,
-          a.rental_end_date,
-          d.username as adminUsername,
-          e.username as customerUsername, 
-          e.address
-        FROM QueueBookings a 
-          LEFT JOIN BookingItems b
-            ON a.id = b.booking_id
-          LEFT JOIN Games c
-            ON c.id = b.game_id
-          LEFT JOIN Admins d
-            ON a.admin_id = d.id
-          LEFT JOIN Users e
-            ON a.customer_id = e.id
-        where b.booking_id = ${orderId}
+        SELECT
+            b.booking_id,
+            b.game_id,
+            c.game_name,
+            c.developer,
+            c.price,
+            a.book_date,
+            a.rental_start_date,
+            a.rental_end_date,
+            d.username AS adminUsername,
+            e.username AS customerUsername,
+            e.address,
+            MAX(img.filepath) AS filepath
+        FROM QueueBookings a
+        LEFT JOIN BookingItems b ON a.id = b.booking_id
+        LEFT JOIN Games c ON c.id = b.game_id
+        LEFT JOIN Admins d ON a.admin_id = d.id
+        LEFT JOIN Users e ON a.customer_id = e.id
+        LEFT JOIN FileLink fl ON fl.gameID = c.id
+        LEFT JOIN images img ON img.id = fl.fileID
+        WHERE b.booking_id =  ${orderId}
+        GROUP BY
+            b.booking_id,
+            b.game_id,
+            c.game_name,
+            c.developer,
+            c.price,
+            a.book_date,
+            a.rental_start_date,
+            a.rental_end_date,
+            d.username,
+            e.username,
+            e.address
+
         `;
         const [orderDetail] = await connection.query(query);
     
@@ -265,13 +280,14 @@ const order = {
           return `${key} = '${json[key]}'`
         }).join(', ')
 
-        console.log("queryUpdate", queryUpdate)
-
-        const query = `UPDATE QueueBookings SET 
-        ${queryUpdate}
-        WHERE id = ${orderId}`;
-
-        await connection.query(query);
+        // console.log("queryUpdate", queryUpdate)
+        if(queryUpdate) {
+          const query = `UPDATE QueueBookings SET 
+          ${queryUpdate}
+          WHERE id = ${orderId}`;
+  
+          await connection.query(query);
+        }
 
         await connection.commit();
 

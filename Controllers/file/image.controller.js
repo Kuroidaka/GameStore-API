@@ -8,7 +8,6 @@ const image = {
   upload: async (req, res) => {
     const files = req.files; // Retrieve the array of uploaded files
 
-
     let connection;
 
     if (!files || files.length === 0) {
@@ -19,23 +18,37 @@ const image = {
 
     await connection.beginTransaction();
 
+    const listImageID = []
+
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
+        
+        const filepath = file.path.split('/')[1];
+      
+
         const result = await connection.query(
           `INSERT INTO Images (filepath) VALUES (?)`,
-          [file.path]
+          [filepath]
         );
 
         if (result[0].affectedRows !== 1) {
-          throw new Error(`Failed to update image with ID: ${imageId}`);
+
+
+          throw new Error(`Failed to update image`);
+        }
+        else {
+          const { insertId: imageID } = result[0];
+
+          listImageID.push(imageID)
         }
       }
 
       await connection.commit();
 
-      res.status(200).json({ msg: 'Images updated successfully.' });
+      return listImageID
+      // res.status(200).json({ msg: 'Images updated successfully.' });
     } catch (error) {
       console.log(error);
 

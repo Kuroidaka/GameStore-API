@@ -3,7 +3,7 @@ const DB = require('../../config/database');
 
 const info = {
     getOne: async (req, res) => {
-        const { id, username, email } = req.query;
+        const { id, username, email, phone } = req.query;
 
         try {
             const [result] = await DB.query(
@@ -16,9 +16,9 @@ const info = {
                     u.total_points,
                     u.subscription_status
              From ${process.env.DATABASE_NAME}.Users u
-             WHERE username = ? OR email = ? OR id = ? 
+             WHERE username = ? OR email = ? OR id = ? OR phone = ?
             `,
-                [username, email, id]
+                [username, email, id, phone]
             )
 
             if (result.length === 0) {
@@ -68,7 +68,39 @@ const info = {
             return res.status(500).json({ msg: "Server error" });
         }
     },
+    createCustomerInfo: async (req, res) => {
+        const { username } = req.user;
 
+        const json = req.body;
+
+        const keyList = Object.keys(json);
+
+        const queryInsert = keyList.map(key => {
+            return `${key}`
+        }).join(',')
+
+        const valueList = keyList.map(key => {
+            return `'${json[key]}'`
+        }).join(',')
+
+        const query = `
+            INSERT INTO ${process.env.DATABASE_NAME}.Users (${queryInsert})
+            VALUES (${valueList})
+        `;
+
+        try {
+            const result = await DB.query(query);
+
+            const { insertId } = result[0]
+            return res.status(200).json({ msg: 'Create successfully', data: {
+                id: insertId
+            } });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ msg: 'Server Error' });
+        }
+
+    }
 
 }
 

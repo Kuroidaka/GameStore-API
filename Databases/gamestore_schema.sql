@@ -3,9 +3,9 @@ USE GAMESTORE;
 
 CREATE TABLE Users (
 	id INT UNIQUE PRIMARY KEY AUTO_INCREMENT,
-	username VARCHAR(50) UNIQUE NOT NULL,
+	username VARCHAR(50) UNIQUE 
 	display_name VARCHAR(50),
-	password VARCHAR(300) NOT NULL,
+	password VARCHAR(300) ,
 	email VARCHAR(100) UNIQUE,
 	phone VARCHAR(20),
 	address VARCHAR(100),
@@ -18,7 +18,7 @@ CREATE TABLE Admins (
 	id INT UNIQUE PRIMARY KEY AUTO_INCREMENT ,
 	username VARCHAR(50) UNIQUE NOT NULL,
 	password VARCHAR(300) NOT NULL,
-	email VARCHAR(100) NOT NULL,
+	email VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Games (
@@ -48,8 +48,8 @@ CREATE TABLE QueueBookings (
 	queue_status ENUM('WAITING', 'DONE', 'DECLINE') DEFAULT 'WAITING',
 	discount_applied DECIMAL(3,2) DEFAULT 0.00,
 	address VARCHAR(100),
-	rent_duration INT NOT NULL
-	rental_price DECIMAL(6,2) NOT NULL
+	rent_duration INT NOT NULL,
+	rental_price DECIMAL(6,2)
 	-- FOREIGN KEY (customer_id) REFERENCES Users(id),
 	-- FOREIGN KEY (admin_id) REFERENCES Admins(id)
 );
@@ -107,33 +107,10 @@ CREATE TABLE images (
   id int NOT NULL AUTO_INCREMENT,
   filepath varchar(255) NOT NULL,
   PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE FileLink (
-	id int NOT NULL AUTO_INCREMENT,
 	fileID varchar(255) NOT NULL,
 	gameID int NOT NULL
-)
-
-
--- CREATE TABLE PaymentMethods (
--- 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
--- 	customer_id INT NOT NULL,
--- 	payment_type ENUM('CREDIT CARD', 'DEBIT CARD', 'PAYPAL', 'OTHER') NOT NULL,
--- 	card_number VARCHAR(20),
--- 	cardholder_name VARCHAR(50),
--- 	expiration_date DATE,
--- 	FOREIGN KEY (customer_id) REFERENCES Users(id)
--- );
-
--- CREATE TABLE OrderPayments (
--- 	order_id INT UNSIGNED NOT NULL,
--- 	payment_method_id INT UNSIGNED NOT NULL,
--- 	payment_status ENUM('PENDING', 'PAID', 'FAILED') DEFAULT 'PENDING',
--- 	payment_date DATE,
---     PRIMARY KEY(order_id, payment_method_id),
--- 	FOREIGN KEY (order_id) REFERENCES Orders(id),
--- 	FOREIGN KEY (payment_method_id) REFERENCES PaymentMethods(id)
--- );
-
+);
 

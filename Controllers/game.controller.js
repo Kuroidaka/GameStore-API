@@ -1,4 +1,5 @@
-const DB = require('../config/database')
+const DB = require('../config/database');
+const image = require('./file/image.controller');
 
 
 const game = { 
@@ -26,6 +27,38 @@ const game = {
             res.status(401).json({msg : 'Access denied. User not authorized.'});
         }
     },
+    uploadGameFile: async (req, res) => {
+        const { gameID } = req.query
+
+        const connection = await DB.getConnection();
+
+        try {
+            await connection.beginTransaction()
+
+            const listImageId = await image.upload(req, res) 
+            
+            if(listImageId.length > 0) {
+                for(const imageID of listImageId) {
+                    const query = "INSERT INTO FileLink (gameID, fileID) VALUES (?, ?)";
+        
+                    const result = await connection.query(query, [gameID, imageID]);
+
+                    if (result[0].affectedRows !== 1) {
+                        throw new Error(`Failed to Link image with ID: ${imageID}`);
+                      }
+                }
+            }
+
+
+            await connection.commit();
+
+            return res.status(200).json({msg : 'File linked successfully'})
+
+        } catch (error) {
+            console.log(error)
+        }
+
+    },
     getGameList: async (req, res) => {
         const param = Number(req.query.limit)
         //if there limit the query will be "Select * from Games limit ?" else the query will be "SELECT * FROM Games"
@@ -51,7 +84,40 @@ const game = {
     },
     getGameByName: async (req, res) => {
         const name = req.query.name
-        const query = `SELECT * FROM Games WHERE game_name LIKE '%${name}%'`;
+        const query = `SELECT
+                        g.id,
+                        g.game_name,
+                        g.release_date,
+                        g.developer,
+                        g.rating,
+                        g.price,
+                        g.genre,
+                        g.platform,
+                        g.description,
+                        g.created_at,
+                        g.updated_at,
+                        MAX(img.filepath) AS filepath
+                        
+                    FROM Games g
+                    JOIN FileLink fl
+                        ON g.id = fl.gameID
+                    JOIN images img 
+                        on img.id = fl.fileID
+                    
+                    WHERE game_name LIKE '%${name}%'
+                    
+                    GROUP BY
+                        g.id,
+                        g.game_name,
+                        g.release_date,
+                        g.developer,
+                        g.rating,
+                        g.price,
+                        g.genre,
+                        g.platform,
+                        g.description,
+                        g.created_at,
+                        g.updated_at`;
         try {
             const result = await DB.query(query,name);
             return res.status(200).json(result[0]);
@@ -137,3 +203,4 @@ const game = {
 }
 
 module.exports = game
+

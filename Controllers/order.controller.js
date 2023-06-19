@@ -316,6 +316,39 @@ const order = {
         }
       }
 
+    },
+    getOrderByGameId: async (req, res) => {
+      const { id } = req.query
+      
+      try {
+          const [result] = await DB.query(`
+          SELECT b.booking_id,
+                a.queue_status,
+                a.rental_start_date,
+                a.book_date,
+                a.rental_end_date,
+                a.rental_price,
+                c.game_name,
+                d.display_name
+            
+          FROM GAMESTORE.QueueBookings a
+          LEFT JOIN BookingItems b 
+            ON a.id = b.booking_id
+          LEFT JOIN Games c
+            ON b.game_id = c.id
+          LEFT JOIN Users d
+            ON d.id = a.customer_id
+          WHERE c.id = ${id}
+        `)
+
+        console.log(result)
+  
+        return res.status(200).json(result);
+      } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg: 'Server Error'})
+      }
+
     }
 }
 

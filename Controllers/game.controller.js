@@ -89,7 +89,21 @@ const game = {
     getGameById: async (req, res) => {
         const query = "SELECT * FROM Games WHERE id = ?";
         try {
-            const result = await DB.query(query, req.query.id);
+            const [result] = await DB.query(query, req.query.id);
+            
+            console.log(result)
+
+            const [imageList] = await DB.query(`
+                    SELECT
+                    img.filepath AS filepath
+                    FROM Games c
+                    LEFT JOIN FileLink fl ON fl.gameID = c.id
+                    LEFT JOIN images img ON img.id = fl.fileID
+                    where c.id = ${result[0].id}`
+                );
+
+
+            result[0].imageList = imageList;
             return res.status(200).json(result[0]);
         } catch (err) {
             console.error(err);

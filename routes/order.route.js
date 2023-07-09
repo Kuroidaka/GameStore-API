@@ -12,6 +12,8 @@ router.get('/get', order.getListOrder)
 router.get('/get-order-detail', order.getOrderDetail)
 router.post('/edit-order-detail', verifyToken, verifyAdmin, order.editOrder)
 router.get('/get-order-by-game', order.getOrderByGameId)
+router.get('/get-total-revenue', order.getTotalRevenue)
+router.get('/get-total-revenue-by-month', order.getRevenueByMonth)
 
 
 module.exports = router

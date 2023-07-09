@@ -11,5 +11,7 @@ router.post('/changePassword', verifyToken, auth.changePassword)
 router.post('/getInfo', info.getOne)
 router.post('/update', info.update)
 router.post('/create', verifyToken, verifyAdmin, info.createCustomerInfo)
+router.get('/get-user-join-today', auth.getUserJoinToday)
+router.get('/get-user-join-month', info.getTotalUserByMonth)
 
 module.exports = router

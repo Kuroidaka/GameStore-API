@@ -5,9 +5,13 @@ const image = require('./file/image.controller');
 const game = { 
     insertGame: async (req, res) => { 
 
-        const { username } = req.user;
+        const { username, id:userID } = req.user;
 
-        const [checkAdmin] = await DB.query('SELECT * FROM Admins WHERE username = ?', [username])
+        let connection = await DB.getConnection();
+
+        await connection.beginTransaction();
+
+        const [checkAdmin] = await connection.query('SELECT * FROM Admins WHERE username = ?', [username])
 
         if(checkAdmin.length >= 1){ 
 
@@ -16,13 +20,34 @@ const game = {
             const values = [game_name, release_date, developer, rating, price, genre, platform, description];
         
             try {
-                const result = await DB.query(query, values);
+                const result = await connection.query(query, values);
                 console.log(`Inserted ${result[0].affectedRows} row(s)`);
+
+                 // tracking history
+                const queryTrack = `
+                INSERT INTO history_action_track ( admin_id, event_name, action ) 
+                VALUES (${userID}, 'Insert Game', 'Insert game ${game_name} successfully')`;
+                
+                await connection.query(queryTrack);
+
+                // Commit the transaction
+                await connection.commit();
+
                 return res.status(200).json({ msg: 'Game created successfully' });
             } catch (err) {
                 console.error(err);
+
+                  // Rollback the transaction if an error occurs
+                if (connection) {
+                    await connection.rollback();
+                }
                 return res.status(500).json({ msg: 'Server Error' });
-            }
+            }finally {
+                // Release the connection back to the pool
+                if (connection) {
+                  connection.release();
+                }
+              }
         }else {
             res.status(401).json({msg : 'Access denied. User not authorized.'});
         }
@@ -227,7 +252,19 @@ const game = {
         else {
             res.status(401).json({msg : 'Access denied. User not authorized.'});
         }
-    }
+    },
+    getTotalGame : async (req, res ) => {
+        try {
+          const [result] = await DB.query(`
+          SELECT COUNT(id) as GameData FROM ${process.env.DATABASE_NAME}.Games;
+          `)
+  
+          return res.status(200).json({data: result[0].GameData})
+        } catch (error) {
+          console.log(error)
+          return res.status(500).json({msg: 'Server Error'})
+        }
+      }
 }
 
 module.exports = game

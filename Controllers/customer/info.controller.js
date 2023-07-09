@@ -100,6 +100,35 @@ const info = {
             return res.status(500).json({ msg: 'Server Error' });
         }
 
+    },
+    getTotalUserByMonth: async (req, res) => {
+        
+        try {
+
+            const queryGetCustomerByMonth = `
+            SELECT
+                YEAR(created_at) AS year,
+                MONTH(created_at) AS month,
+                COUNT(*) AS totalUsers
+            FROM
+                GAMESTORE.Users
+            GROUP BY
+                YEAR(created_at),
+                MONTH(created_at)
+            ORDER BY
+                YEAR(created_at),
+                MONTH(created_at);
+          `
+  
+          const [result] = await DB.query(queryGetCustomerByMonth)
+  
+  
+          return res.status(200).json(result)
+            
+          } catch (error) {
+            console.log(error)
+            return res.status(500).json({msg: 'Server Error'})
+          }
     }
 
 }

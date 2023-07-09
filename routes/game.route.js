@@ -10,4 +10,6 @@ router.get('/getById', game.getGameById)
 router.get("/getByName", game.getGameByName)
 router.post('/delete', verifyToken, game.deleteGame)
 router.post('/edit', verifyToken, game.editGame)
+router.get('/get-count-game', game.getTotalGame)
+
 module.exports = router

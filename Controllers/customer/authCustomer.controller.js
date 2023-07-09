@@ -99,6 +99,32 @@ const auth = {
         return res.status(500).json({ error: 'Server error' });
       
       }
+    },
+    getUserJoinToday : async (req, res ) => {
+      try {
+        const [result] = await DB.query(`
+        SELECT
+            (SELECT COUNT(id) FROM GAMESTORE.Users WHERE DATE(created_at) = CURDATE()) as dataUserToday,
+            COUNT(id) as totalUsers
+        FROM
+            GAMESTORE.Users;
+    
+      
+        `)
+        let Increase = false;
+        let percent = 0;
+        const {dataUserToday, totalUsers} = result[0]
+
+        if(dataUserToday > 0) {
+          Increase = true
+          percent = (dataUserToday / totalUsers) * 100
+        }
+
+        return res.status(200).json({data: dataUserToday, increase: Increase, percent: percent})
+      } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg: 'Server Error'})
+      }
     }
 }
 

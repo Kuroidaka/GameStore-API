@@ -139,3 +139,11 @@ CREATE TABLE history_action_track (
   action VARCHAR(255) NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE banned_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    banned_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    reason TEXT NOT NULL,
+    banned_by VARCHAR(255) NOT NULL
+);

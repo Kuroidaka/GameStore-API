@@ -125,7 +125,55 @@ const auth = {
         console.log(error)
         return res.status(500).json({msg: 'Server Error'})
       }
+    },
+    ban : async (req, res) => {
+      const { id:adminID } = req.user;
+
+      try {
+        const {id:userID} = req.query;
+        const { reason } = req.body
+
+        const [checkUser] = await DB.query(`SELECT * FROM ${process.env.DATABASE_NAME}.Users WHERE id = ?`, [userID])
+        if(checkUser.length < 1) return res.status(404).json({msg: 'User not found'})
+
+        const [checkBan] = await DB.query(`SELECT * FROM ${process.env.DATABASE_NAME}.banned_users WHERE user_id = ?`, [userID])
+        if(checkBan.length >= 1) return res.status(404).json({msg: 'User already banned'})
+
+        const [result] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.banned_users (user_id, banned_by, reason) VALUES (?, ?, ?)`, [userID, adminID, reason])
+        return res.status(200).json({msg: 'Ban successfully'})
+        
+      } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg: 'Server Error'})
+      }
+    },
+    unBan: async (req, res) => {
+      const { id: adminID } = req.user;
+    
+      try {
+        const { id: userID } = req.query;
+    
+        const [checkBan] = await DB.query(
+          `SELECT * FROM ${process.env.DATABASE_NAME}.banned_users WHERE user_id = ?`,
+          [userID]
+        );
+        
+        if (checkBan.length < 1) {
+          return res.status(404).json({ msg: 'User is not banned' });
+        }
+    
+        await DB.query(
+          `DELETE FROM ${process.env.DATABASE_NAME}.banned_users WHERE user_id = ?`,
+          [userID]
+        );
+    
+        return res.status(200).json({ msg: 'User unbanned successfully' });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'Server Error' });
+      }
     }
+    
 }
 
 

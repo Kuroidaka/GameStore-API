@@ -15,5 +15,6 @@ router.get('/get-user-join-today', auth.getUserJoinToday)
 router.get('/get-user-join-month', info.getTotalUserByMonth)
 router.post('/ban',verifyToken, verifyAdmin, auth.ban)
 router.post('/un-ban',verifyToken, verifyAdmin, auth.unBan)
+router.get('/ban/get-list', verifyToken, verifyAdmin, auth.getListBanned)
 
 module.exports = router

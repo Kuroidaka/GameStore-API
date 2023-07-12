@@ -4,6 +4,7 @@ const router = express.Router()
 const auth = require('../Controllers/customer/authCustomer.controller')
 const info = require('../Controllers/customer/info.controller')
 const verifyAdmin = require('../middleware/verifyAdmin')
+const checkBannedUser = require('../middleware/checkbanned')
 
 router.post('/signup', auth.signUp)
 router.post('/login', auth.login)

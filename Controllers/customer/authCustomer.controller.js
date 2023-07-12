@@ -2,6 +2,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const DB = require('../../config/database');
+const service = require('../../service');
 
 const auth = {
     signUp: async (req, res) => {
@@ -50,6 +51,12 @@ const auth = {
         if (!await bcrypt.compare(password, result[0].password)) {
           return res.status(401).json({msg : 'Password is incorrect'});
           
+        }
+
+        const { banned } = await service.isBanned(result[0].id)
+
+        if(banned) {
+          return res.status(401).json({msg : 'Account is banned'});
         }
     
         // generate a JSON web token for the user

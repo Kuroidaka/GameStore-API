@@ -1,9 +1,10 @@
 const DB = require('../config/database');
+const service = require('../service');
 
 const verifyAdmin = async (req, res, next) => {
     const { username } = req.user;
-    const [checkAdmin] = await DB.query('SELECT * FROM Admins WHERE username = ?', [username])
-    if(checkAdmin.length >= 1){ 
+    const { valid } = await service.isAdmin(username)
+    if(valid){ 
         next()
     }else {
         res.status(401).json({msg : 'Access denied. User not authorized.'});

@@ -4,7 +4,8 @@
       booking: async (req, res) => {
           // const { id } = req.user;
           console.log(req.body)
-          const { rent_duration, gameList, discount_applied, address, customerID } = req.body;
+          const { rent_duration, gameList, discount_applied, address, customer_id:customerID } = req.body;
+          console.log("customerID", customerID)
           let total_price = 0 
 
           const queryQueueOrder = `
@@ -378,7 +379,7 @@
 
           let percent = (revenueToday - revenueYesterday) / (revenueYesterday) * 100;
 
-          return res.status(200).json({data: revenueToday, percent: percent});
+          return res.status(200).json({data: revenueToday, percent: percent.toFixed(2)});
         } catch (error) {
           console.log(error)
           return res.status(500).json({msg: 'Server Error'})

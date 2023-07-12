@@ -32,7 +32,7 @@ CREATE TABLE Games (
 	developer VARCHAR(50),
 	rating FLOAT(2,1) DEFAULT 0.0,
 	price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-	genre ENUM('Action', 'Adventure', 'Role-playing', 'Simulation', 'Strategy', 'Sports', 'Rhythm', 'Other') DEFAULT 'Other',
+	genre SET('Action', 'Adventure', 'Role-playing', 'Simulation', 'Strategy', 'Sports', 'Rhythm', 'Other') DEFAULT 'Other',
 	platform SET('PC', 'PlayStation', 'Xbox', 'Nintendo', 'Mobile', 'VR', 'Other') DEFAULT 'Other',
 	description TEXT,
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -135,6 +135,7 @@ CREATE TABLE history_action_track (
   id INT AUTO_INCREMENT PRIMARY KEY,
   admin_id INT,
   user_id INT,
+  event_name VARCHAR(255),
   action VARCHAR(255) NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

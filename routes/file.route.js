@@ -9,6 +9,9 @@ const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
         // Check if the file is an image
+
+        console.log("file", file)
+
         if (!file.mimetype.startsWith('image/')) {
         return cb(new Error('Only image files are allowed.'));
         }

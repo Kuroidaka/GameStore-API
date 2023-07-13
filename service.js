@@ -1,6 +1,5 @@
 const DB = require('./config/database');
 
-
 const service = {
 
     isAdmin: async (username) => {
@@ -22,6 +21,26 @@ const service = {
         return { banned: true }
         }
         return { banned: false }
+    },
+    generateDiscountCode: async (length = 8) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let discountCode = '';
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          discountCode += chars.charAt(randomIndex);
+        }
+        return discountCode;
+    },
+    getDiscountByCode: async (discountCode) => {
+        const [discount] = await DB.query(
+            `SELECT * FROM ${process.env.DATABASE_NAME}.Discounts WHERE discount_code = ?`,
+            [discountCode]
+        );
+        if (discount.length === 0) { 
+            return false;
+        }
+
+        return { expiration_date: discount[0].expiration_date, discount_amount: discount[0].discount_amount }
     }
 }
 

@@ -87,7 +87,7 @@ CREATE TABLE Reviews (
 );
 
 CREATE TABLE Discounts (
-	id INT PRIMARY KEY,
+	id INT PRIMARY KEY AUTO_INCREMENT,
 	discount_code VARCHAR(20) NOT NULL,
 	discount_amount DECIMAL(3,2) NOT NULL,
 	expiration_date DATE NOT NULL,

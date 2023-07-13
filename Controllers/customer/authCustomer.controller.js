@@ -127,7 +127,7 @@ const auth = {
           percent = (dataUserToday / totalUsers) * 100
         }
 
-        return res.status(200).json({data: dataUserToday, increase: Increase, percent: percent})
+        return res.status(200).json({data: dataUserToday, increase: Increase, percent: percent.toFixed(2)})
       } catch (error) {
         console.log(error)
         return res.status(500).json({msg: 'Server Error'})

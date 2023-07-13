@@ -32,6 +32,51 @@ const info = {
         }
 
     },
+    getListCustomer: async (req, res) => {
+        const { id, username, email, phone } = req.query;
+
+        try {
+            const [result] = await DB.query(
+                `
+                SELECT 
+                    users.id,
+                    users.username,
+                    users.display_name,
+                    users.email,
+                    users.phone,
+                    users.address,
+                    users.total_points,
+                    users.subscription_status,
+                    users.created_at,
+                    users.updated_at,
+                    SUM(qb.rental_price) as totalPrice
+                FROM Users 
+                JOIN queuebookings qb 
+                ON Users.id = qb.customer_id
+                GROUP BY users.id,
+                    users.username,
+                    users.display_name,
+                    users.email,
+                    users.phone,
+                    users.address,
+                    users.total_points,
+                    users.subscription_status,
+                    users.created_at,
+                    users.updated_at
+            `
+            )
+
+            if (result.length === 0) {
+                return res.status(404).json({ msg: "no user found" })
+            }
+
+            return res.status(200).json(result)
+
+        } catch (error) {
+            return res.status(500).json({ msg: 'Error Server' })
+        }
+
+    },
     update: async (req, res) => {
         const { id } = req.query;
 

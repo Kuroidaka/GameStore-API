@@ -5,6 +5,8 @@ const customer = require('./customer.route')
 const wishlist = require('./wishlist.route')
 const file = require('./file.route')
 const track = require('./tracking.route')
+const discount = require('./discount.route')
+
 
 function routes (app) {
     app.use('/game', game)
@@ -14,6 +16,7 @@ function routes (app) {
     app.use('/wishlist', wishlist)
     app.use('/file', file)
     app.use('/track', track)
+    app.use('/discount', discount)
 }
 
 module.exports = routes

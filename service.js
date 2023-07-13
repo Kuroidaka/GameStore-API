@@ -22,7 +22,16 @@ const service = {
         return { banned: true }
         }
         return { banned: false }
-    }
+    },
+    generateDiscountCode: async (length = 8) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let discountCode = '';
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          discountCode += chars.charAt(randomIndex);
+        }
+        return discountCode;
+      }
 }
 
 

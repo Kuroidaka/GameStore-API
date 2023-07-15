@@ -1,36 +1,41 @@
 const DB = require('../../config/database');
 const nodemailer = require('nodemailer');
 const template = require("./template.html")
+const service = require("../../service")
 
 const mail = {
   send: async (req, res) => {
-    const { customerName, customerEmail, subject, message, coupon, expirationDate } = req.body;
+    const { customerName, customerEmail, subject, message, coupon, expirationDate, customCode } = req.body;
 
     try {
+      let connection = await DB.getConnection();
       // Create a transporter for sending emails
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: "thomasjin38@gmail.com",
-          pass: "esinuztkqktmrtdz",
-        },
-      });
+      let code =''
+      if(customCode) {
+        code = customCode
+      }
+      else {
+        const { discountCode } = await service.generateDiscountCode(8, connection, coupon, expirationDate)
+        code = discountCode
+      }
 
-      // Define the email options
-      const mailOptions = {
-        from: "thomasjin38@gmail.com",
-        to: customerEmail,
-        subject: subject,
-        html: template.coupon(customerName, message, coupon*100, expirationDate)
-      };
-
-      // Send the email
-      const info = await transporter.sendMail(mailOptions);
-      console.log('Email sent: ' + info.response);
-      return res.status(200).json({ message: 'Email sent successfully.' });
+      if(code) {
+        const sendMailStatus = await service.sendMail(customerName, customerEmail, subject, message, coupon, expirationDate, template, code)
+        
+        if(sendMailStatus.success) {
+          console.log('Email sent: ' + sendMailStatus.message);
+  
+          return res.status(200).json({ message: sendMailStatus.message });
+        }
+        else {
+          console.log(error);
+          return res.status(500).json({ error: sendMailStatus.message });
+        }
+      }
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: 'An error occurred while sending the email.' });
+      return res.status(500).json({ error: sendMailStatus.message });
+
     }
   },
 };

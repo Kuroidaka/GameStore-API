@@ -1,9 +1,6 @@
 const template =  {
 
-  coupon : (customerName, message, coupon, expirationDate) => {
-
-
-
+  coupon : (customerName, message, coupon, expirationDate, code) => {
   const html =  `
   <!DOCTYPE html>
         <html>
@@ -103,14 +100,14 @@ const template =  {
                 <p style="text-align: center">Here's your coupon code${expirationDate?`- but hurry!<strong>Ends ${expirationDate}</strong>` : ""} </p>
                 
                 <div class="code-wrapper">
-                  <h1>ASDJKLDW</h1>
+                  <h1>${code}</h1>
                 </div>
                 
                 
                 <p style="text-align: center;
                           width: 80%;
                           margin: auto;
-                          padding: 28px 0 10px 0;">
+                          padding: 28px 0 10px 0;">${customerName}
                           ${message ? message : ` Please redeem this coupon code on any products before ${expirationDate} to receive instant ${coupon} % off at checkout?`} 
                           </p>
                 <p style="text-align: center;">
@@ -129,6 +126,7 @@ const template =  {
   `
     return html;
   }
+
 }
 
 module.exports = template

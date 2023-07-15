@@ -14,7 +14,9 @@ const info = {
                     u.phone,
                     u.address,
                     u.total_points,
-                    u.subscription_status
+                    u.subscription_status,
+                    u.gender,
+                    u.birth_date
              From ${process.env.DATABASE_NAME}.Users u
              WHERE username = ? OR email = ? OR id = ? OR phone = ?
             `,
@@ -96,8 +98,18 @@ const info = {
             const keyList = Object.keys(json);
 
             const queryUpdate = keyList.map(key => {
+
+                if(key === 'birth_date') {
+                    const date = new Date(json[key])
+                    console.log("json[key]", date)
+
+                    json[key] = date.toISOString().slice(0, 19).replace('T', ' ')
+                }
+
                 return `${key} = '${json[key]}'`
             }).join(',')
+
+            console.log("queryUpdate", queryUpdate)
 
             const query = `
             UPDATE ${process.env.DATABASE_NAME}.Users

@@ -8,6 +8,8 @@ CREATE TABLE Users (
 	password VARCHAR(300) ,
 	email VARCHAR(100) UNIQUE,
 	phone VARCHAR(20),
+	birth_date Date,
+	gender ENUM('MALE', 'FEMALE', 'OTHER') DEFAULT 'OTHER',
 	address VARCHAR(100),
 	total_points INT DEFAULT 0,
 	subscription_status BOOLEAN DEFAULT false,
@@ -146,14 +148,4 @@ CREATE TABLE banned_users (
     banned_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reason TEXT NOT NULL,
     banned_by VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE discounts (
-  id INT AUTO_INCREMENT,
-  discount_code VARCHAR(20) NOT NULL,
-  discount_amount DECIMAL(3,2) NOT NULL,
-  expiration_date DATE NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
 );

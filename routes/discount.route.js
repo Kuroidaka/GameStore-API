@@ -7,6 +7,7 @@ const router = express.Router()
 
 router.post('/generate', verifyToken, verifyAdmin, discount.generate)
 router.post('/apply', discount.applyDiscountCode)
+router.get('/get-list-discount', discount.getListDiscount)
 
 
 module.exports = router

@@ -1,5 +1,6 @@
 const DB = require('../config/database');
 const service = require('../service')
+const { v4: uuidv4 } = require('uuid');
 
 const discount = { 
     generate: async (req, res) => { 
@@ -61,7 +62,15 @@ const discount = {
             connection.release();
           }
         }
-      }
+    },
+    getListDiscount: async (req, res) => { 
+
+      const [result] = await DB.query(`
+      SELECT * FROM Discounts;
+      `);
+
+      return res.status(200).json(result);
+    },
 }
 
 module.exports = discount

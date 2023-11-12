@@ -1,4 +1,5 @@
 const DB = require('../../config/database')
+const { v4: uuidv4 } = require('uuid');
 
 const wishList = {
   add: async (req, res) => {
@@ -18,16 +19,17 @@ const wishList = {
 
       // return res.status(200).json(wishListExists[0])
       if (wishListExists.length == 0) {
+
+        const wlID = uuidv4()
+
         const [wishListsInsert] = await connection.query(
-          `INSERT INTO wishlists (customer_id) VALUES (?)`,
-          [id],
+          `INSERT INTO wishlists (id, customer_id) VALUES (?, ?)`,
+          [wlID, id],
         )
 
-        const { insertId: wishListId } = wishListsInsert
-
         await connection.query(
-          `INSERT INTO wishItems (wishlist_id, game_id) VALUES (?, ?)`,
-          [wishListId, gameId],
+          `INSERT INTO wishItems (id, wishlist_id, game_id) VALUES (?, ?, ?)`,
+          [uuidv4(), wlID, gameId],
         )
       } else {
         const { id: wishListId } = wishListExists[0]
@@ -39,8 +41,8 @@ const wishList = {
 
         if (wishItemExists.length == 0) {
           await connection.query(
-            `INSERT INTO  ${process.env.DATABASE_NAME}.wishItems (wishlist_id, game_id) VALUES (?, ?)`,
-            [wishListId, gameId],
+            `INSERT INTO  ${process.env.DATABASE_NAME}.wishItems (id, wishlist_id, game_id) VALUES (?, ?, ?)`,
+            [uuidv4(), wishListId, gameId],
           )
         } else {
           return res.status(400).json({ msg: 'Game already exists in wishlist' })

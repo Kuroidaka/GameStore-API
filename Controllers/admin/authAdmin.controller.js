@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const DB = require('../../config/database');
-
+const { v4: uuidv4 } = require('uuid');
 
 const auth = {
     signUp: async (req, res) => {
@@ -28,17 +28,21 @@ const auth = {
     
         // hash the password using bcrypt
         const hashedPassword = await bcrypt.hash(password, 10);
-    
-        // insert the new user into the database
-        const [newUser] = await connection.query('INSERT INTO Admins (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
-    
+
+        const newUserID = uuidv4()
+
+        const [newUser] = await connection.query(
+          'INSERT INTO Admins (id, username, email, password) VALUES (?, ?, ?, ?)',
+          [newUserID, username, email, hashedPassword]
+        );
+          
         // generate a JSON web token for the new user
-        const token = jwt.sign({ id: newUser.insertId, username, email }, 'your-secret-key', { expiresIn: '1h' });
+        const token = jwt.sign({ id: newUserID, username, email }, 'your-secret-key', { expiresIn: '1h' });
 
          // tracking history
          const queryTrack = `
-         INSERT INTO history_action_track ( admin_id, event_name, action ) 
-         VALUES (${newUser.insertId}, 'Sign Up', 'admin ${username} sign up successfully')`;
+         INSERT INTO history_action_track (id, admin_id, event_name, action ) 
+         VALUES ('${uuidv4()}', '${newUserID}', 'Sign Up', 'admin ${username} sign up successfully')`;
          
          await connection.query(queryTrack);
 
@@ -125,8 +129,8 @@ const auth = {
 
                 
         const queryTrack = `
-        INSERT INTO history_action_track ( admin_id, event_name, action ) 
-        VALUES (${userId}, 'Change password', 'admin ${username} changed password successfully')`;
+        INSERT INTO history_action_track (id, admin_id, event_name, action ) 
+        VALUES ('${uuidv4()}', '${userId}', 'Change password', 'admin ${username} changed password successfully')`;
         
         await connection.query(queryTrack);
 

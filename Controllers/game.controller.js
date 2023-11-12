@@ -1,6 +1,6 @@
 const DB = require('../config/database');
 const image = require('./file/image.controller');
-
+const { v4: uuidv4 } = require('uuid');
 
 const game = { 
     insertGame: async (req, res) => { 
@@ -15,9 +15,12 @@ const game = {
 
         if(checkAdmin.length >= 1){ 
 
+            // Generate a random ID
+            const gameId = uuidv4();
+
             const { game_name, release_date, developer, rating, price, genre, platform, description } = req.body;
-            const query = "INSERT INTO Games (game_name, release_date, developer, rating, price, genre, platform, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            const values = [game_name, release_date, developer, rating, price, genre, platform, description];
+            const query = "INSERT INTO Games (id, game_name, release_date, developer, rating, price, genre, platform, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            const values = [gameId, game_name, release_date, developer, rating, price, genre, platform, description];
         
             try {
                 const result = await connection.query(query, values);
@@ -25,8 +28,8 @@ const game = {
 
                  // tracking history
                 const queryTrack = `
-                INSERT INTO history_action_track ( admin_id, event_name, action ) 
-                VALUES (${userID}, 'Insert Game', 'Insert game ${game_name} successfully')`;
+                INSERT INTO history_action_track (id, admin_id, event_name, action ) 
+                VALUES ('${uuidv4()}', '${userID}', 'Insert Game', 'Insert game ${game_name} successfully')`;
                 
                 await connection.query(queryTrack);
 
@@ -99,7 +102,7 @@ const game = {
                     FROM Games c
                     LEFT JOIN FileLink fl ON fl.gameID = c.id
                     LEFT JOIN images img ON img.id = fl.fileID
-                    where c.id = ${result[i].id}`
+                    where c.id = '${result[i].id}'`
                 );
 
                 result[i].imageList = imageList;
@@ -124,7 +127,7 @@ const game = {
                     FROM Games c
                     LEFT JOIN FileLink fl ON fl.gameID = c.id
                     LEFT JOIN images img ON img.id = fl.fileID
-                    where c.id = ${result[0].id}`
+                    where c.id = '${result[0].id}'`
                 );
 
 
@@ -238,7 +241,7 @@ const game = {
                 }).join(', ');
 
                 // update game
-                const query = `update Games set ${queryUpdate} where id=${id}`
+                const query = `update Games set ${queryUpdate} where id='${id}'`
                 try {
                     const result = await DB.query(query)
                     return res.status(200).json({ msg: 'successful update' })

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const DB = require('../../config/database');
 const service = require('../../service');
+const { v4: uuidv4 } = require('uuid');
 
 const auth = {
     signUp: async (req, res) => {
@@ -23,13 +24,13 @@ const auth = {
     
         // hash the password using bcrypt
         const hashedPassword = await bcrypt.hash(password, 10);
-    
+        
+        const userID = uuidv4()
         // insert the new user into the database
-        const [newUser] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.Users (username, email, password) VALUES (?, ?, ?)`, [username, email, hashedPassword]);
+        const [newUser] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.Users (id, username, email, password) VALUES (?, ?, ?, ?)`, [userID, username, email, hashedPassword]);
     
         // generate a JSON web token for the new user
-        console.log("newUser.insertId", newUser.insertId);
-        const token = jwt.sign({ id: newUser.insertId, username, email }, 'your-secret-key', { expiresIn: '1h' });
+        const token = jwt.sign({ id: userID, username, email }, 'your-secret-key', { expiresIn: '1h' });
         res.status(200).json({ token });
       } catch (error) {
         console.error('Error signing up: ', error);
@@ -71,8 +72,21 @@ const auth = {
     
     },
     changePassword : async (req, res) => { 
-      const { currentPassword, newPassword } = req.body;
-      const userId = req.user.id; 
+      const { currentPassword, newPassword, username } = req.body;
+
+      const id = req.body?.userID
+
+      let userId;
+
+      if(req.user.id) {
+        userId = req.user.id
+  
+      }
+      else if(id) {
+        userId = id
+      }
+      
+      const { valid:isAdmin } = await service.isAdmin(username)
 
       try {
           // Fetch the current password hash from the database
@@ -146,7 +160,7 @@ const auth = {
         const [checkBan] = await DB.query(`SELECT * FROM ${process.env.DATABASE_NAME}.banned_users WHERE user_id = ?`, [userID])
         if(checkBan.length >= 1) return res.status(404).json({msg: 'User already banned'})
 
-        const [result] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.banned_users (user_id, banned_by, reason) VALUES (?, ?, ?)`, [userID, adminID, reason])
+        const [result] = await DB.query(`INSERT INTO ${process.env.DATABASE_NAME}.banned_users (id, user_id, banned_by, reason) VALUES (?, ?, ?, ?)`, [uuidv4(), userID, adminID, reason])
         return res.status(200).json({msg: 'Ban successfully'})
         
       } catch (error) {

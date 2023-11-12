@@ -1,9 +1,10 @@
 const DB = require('./config/database');
 const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid');
 
 const service = {
 
-    isAdmin: async (username) => {
+    isAdmin: async (username, id) => {
 
         const [checkAdmin] = await DB.query('SELECT * FROM Admins WHERE username = ?', [username])
         if(checkAdmin.length >= 1){ 
@@ -37,8 +38,8 @@ const service = {
           expirationDate.setDate(expirationDate.getDate() + expiration);
 
           await connection.query(` 
-          INSERT INTO Discounts (discount_code, discount_amount, expiration_date)
-          VALUES ('${discountCode}', '${amount}', '${expirationDate.toISOString().slice(0, 19).replace('T', ' ')}')
+          INSERT INTO Discounts (id, discount_code, discount_amount, expiration_date)
+          VALUES ('${uuidv4()}','${discountCode}', '${amount}', '${expirationDate.toISOString().slice(0, 19).replace('T', ' ')}')
           `)
           // Commit the transaction
           await connection.commit();

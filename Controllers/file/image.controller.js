@@ -3,10 +3,11 @@ const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
 const mime = require('mime-types');
+const { v4: uuidv4 } = require('uuid');
 
 const image = {
   upload: async (req, res) => {
-    const files = req.files; // Retrieve the array of uploaded files
+    const files = req.files;
 
     let connection;
 
@@ -27,10 +28,10 @@ const image = {
         
         const filepath = file.path.split('/')[1];
       
-
+        const imgID = uuidv4()
         const result = await connection.query(
-          `INSERT INTO Images (filepath) VALUES (?)`,
-          [filepath]
+          `INSERT INTO Images (id, filepath) VALUES (?, ?)`,
+          [imgID, filepath]
         );
 
         if (result[0].affectedRows !== 1) {
@@ -39,9 +40,7 @@ const image = {
           throw new Error(`Failed to update image`);
         }
         else {
-          const { insertId: imageID } = result[0];
-
-          listImageID.push(imageID)
+          listImageID.push(imgID)
         }
       }
 
